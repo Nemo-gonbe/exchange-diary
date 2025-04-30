@@ -36,14 +36,45 @@ if st.button("日記を提出"):
     st.success("提出しました！")
 
 # 投稿の一覧表示
+
+        
 st.subheader("📖 みんなの日記")
+
+# 1. カード用のCSSを追加（最初に1回だけ）
+st.markdown("""
+    <style>
+    .diary-card {
+        background-color: #f8f9fa;
+        padding: 1.2em;
+        margin-bottom: 1em;
+        border-radius: 12px;
+        box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+    }
+    .diary-card h4 {
+        margin-top: 0;
+        margin-bottom: 0.5em;
+        color: #333;
+    }
+    .diary-card p {
+        margin: 0.3em 0;
+        font-size: 0.95em;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+# 2. Supabaseから日記データを取得して、HTMLで整形して表示
 res = supabase.table("diary").select("*").order("timestamp", desc=True).limit(10).execute()
 
 for row in res.data:
-    with st.expander(f"{row['diary_date']} - {row['user_name']}"):
-        st.write(f"📝 今日あったこと: {row['today_event']}")
-        st.write(f"✅ Good News: {row['good_news']}")
-        st.write(f"❌ Bad News: {row['bad_news']}")
-        st.write(f"💭 お悩み: {row['worry']}")
-        st.write(f"🤐 ここだけの話: {row['secret']}")
-        st.write(f"🌟 最近のおすすめ: {row['recommend']}")
+    st.markdown(f"""
+    <div class="diary-card">
+        <h4>{row['diary_date']} - {row['user_name']}</h4>
+        <p><strong>📝 今日あったこと:</strong> {row['today_event']}</p>
+        <p><strong>✅ Good News:</strong> {row['good_news']}</p>
+        <p><strong>❌ Bad News:</strong> {row['bad_news']}</p>
+        <p><strong>💭 お悩み:</strong> {row['worry']}</p>
+        <p><strong>🤐 ここだけの話:</strong> {row['secret']}</p>
+        <p><strong>🌟 最近のおすすめ:</strong> {row['recommend']}</p>
+    </div>
+    """, unsafe_allow_html=True)
+
